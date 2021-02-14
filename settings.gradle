@@ -1,0 +1,4 @@
+rootProject.name = "PermissionsHelper"
+include ':sample'
+include ':core'
+include ':ext'
