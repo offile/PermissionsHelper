@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.github.offile.permissionshelper.PermissionsHelper
-import kotlin.coroutines.suspendCoroutine
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
