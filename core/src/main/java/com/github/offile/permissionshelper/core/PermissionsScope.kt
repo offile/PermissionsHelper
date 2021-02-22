@@ -1,4 +1,4 @@
-package com.github.offile.permissionshelper
+package com.github.offile.permissionshelper.core
 
 import android.content.Context
 import android.content.Intent
@@ -12,13 +12,16 @@ import com.github.offile.activityresult.EasyActivityResult
 import com.github.offile.activityresult.callback.PermissionsResultCallback
 import com.github.offile.permissionshelper.util.PermissionsUtil
 
+/**
+ * Implement specific permission requests
+ */
 abstract class PermissionsScope(
     private val context: Context,
     private val easyActivityResult: EasyActivityResult
 ) {
 
     /**
-     * check if permission is granted
+     * Check if runtime permissions are granted
      * @param permission name of the permission being checked
      */
     fun checkPermission(permission: String): Boolean {

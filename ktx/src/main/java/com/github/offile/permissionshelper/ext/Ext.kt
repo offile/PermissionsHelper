@@ -1,8 +1,8 @@
 package com.github.offile.permissionshelper.ext
 
-import com.github.offile.permissionshelper.base.PermissionsBuilder
-import com.github.offile.permissionshelper.base.PermissionsRequest
-import com.github.offile.permissionshelper.base.PermissionsResult
+import com.github.offile.permissionshelper.core.PermissionsBuilder
+import com.github.offile.permissionshelper.core.PermissionsRequest
+import com.github.offile.permissionshelper.core.PermissionsResult
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 

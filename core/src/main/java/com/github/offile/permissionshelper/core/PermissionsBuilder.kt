@@ -1,7 +1,4 @@
-package com.github.offile.permissionshelper.base
-
-import com.github.offile.permissionshelper.PermissionsResultCallback
-import com.github.offile.permissionshelper.PermissionsScope
+package com.github.offile.permissionshelper.core
 
 abstract class PermissionsBuilder<Request : PermissionsRequest<Result>, Result : PermissionsResult>(
     protected val permissionsScope: PermissionsScope,

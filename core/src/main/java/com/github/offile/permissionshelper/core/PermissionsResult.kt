@@ -1,4 +1,4 @@
-package com.github.offile.permissionshelper.base
+package com.github.offile.permissionshelper.core
 
 interface PermissionsResult {
     val isGranted: Boolean

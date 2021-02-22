@@ -2,6 +2,9 @@ package com.github.offile.permissionshelper
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.github.offile.permissionshelper.core.ActivityPermissionsScope
+import com.github.offile.permissionshelper.core.FragmentPermissionsScope
+import com.github.offile.permissionshelper.core.PermissionsScope
 import com.github.offile.permissionshelper.runtime.RuntimePermissionsBuilder
 
 /**

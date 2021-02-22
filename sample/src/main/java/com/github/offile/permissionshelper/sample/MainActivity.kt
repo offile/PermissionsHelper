@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
                     .setMessage("Next please grant permissions")
                     .setPositiveButton("ok"){_,_->
                         it.proceed()
+                    }.setNegativeButton("cancel"){_,_->
+                        it.cancel()
                     }.show()
             }.onNeverAskAgain{
                 AlertDialog.Builder(this)

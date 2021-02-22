@@ -1,15 +1,18 @@
 package com.github.offile.permissionshelper.runtime
 
 import android.content.pm.PackageManager
-import com.github.offile.permissionshelper.PermissionsResultCallback
-import com.github.offile.permissionshelper.PermissionsScope
-import com.github.offile.permissionshelper.base.PermissionsRequest
+import com.github.offile.permissionshelper.core.PermissionsResultCallback
+import com.github.offile.permissionshelper.core.PermissionsRequest
+import com.github.offile.permissionshelper.core.PermissionsScope
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
+/**
+ * Implementation of request runtime permission
+ */
 class RuntimePermissionsRequest(
     permissionsScope: PermissionsScope,
     private val permissions: LinkedHashSet<String>,
@@ -23,7 +26,7 @@ class RuntimePermissionsRequest(
     @OptIn(ExperimentalContracts::class)
     private inline fun checkPermissions(
         permissions: Set<String>,
-        callback: (isGranted: Boolean, grantedList: MutableList<String>, noGrantedList: MutableList<String>) -> Unit,
+        callback: CheckPermissionsCallback,
     ) {
         contract {
             callsInPlace(callback, InvocationKind.EXACTLY_ONCE)
@@ -41,14 +44,14 @@ class RuntimePermissionsRequest(
         callback(isGranted, grantedList, noGrantedList)
     }
 
-    override fun request(callback: PermissionsResultCallback<RuntimePermissionsResult>) {
+    override fun request(callback: RuntimePermissionsResultCallback) {
         checkPermissions(permissions) { isGranted, grantedList, noGrantedList ->
             if (isGranted) {
                 // All permissions are granted
-                callback.onResult(RuntimePermissionsResult(true, grantedList = grantedList))
+                callback.onResult(true, grantedList, emptyList())
             } else {
                 // there are still permissions not granted
-                requestNoGrantedPermissions(grantedList, noGrantedList, callback)
+                requestAndCheckRationale(grantedList, noGrantedList, callback)
             }
         }
     }
@@ -56,10 +59,10 @@ class RuntimePermissionsRequest(
     /**
      * Check if you want to explain before requesting permission
      */
-    private fun requestBeforeCheckRationale(
+    private fun requestAndCheckRationale(
         grantedList: MutableList<String>,
         noGrantedList: MutableList<String>,
-        callback: PermissionsResultCallback<RuntimePermissionsResult>
+        callback: RuntimePermissionsResultCallback
     ) {
         // create request
         val requestFun = {
@@ -73,7 +76,18 @@ class RuntimePermissionsRequest(
             val rationaleList =
                 noGrantedList.filter(permissionsScope::shouldShowRequestPermissionRationale)
             if (rationaleList.isNotEmpty()) {
-                onShowRationale!!.onShowRationale(ShowRationaleScope(rationaleList, requestFun))
+                val showRationaleScope = object : ShowRationaleScope {
+                    override val permissions: List<String> get() = rationaleList
+
+                    override fun proceed() = requestFun()
+
+                    override fun cancel() = callback.onResult(
+                        isGranted = false,
+                        grantedPermissions = grantedList,
+                        deniedPermissions = noGrantedList,
+                    )
+                }
+                onShowRationale!!.onShowRationale(showRationaleScope)
             } else {
                 requestFun()
             }
@@ -88,9 +102,11 @@ class RuntimePermissionsRequest(
     private fun requestNoGrantedPermissions(
         grantedPermissions: MutableList<String>,
         noGrantedPermissions: MutableList<String>,
-        callback: PermissionsResultCallback<RuntimePermissionsResult>,
+        callback: RuntimePermissionsResultCallback,
     ) {
-        permissionsScope.requestPermissions(*noGrantedPermissions.toTypedArray()) { p, grantResults ->
+        permissionsScope.requestPermissions(
+            *noGrantedPermissions.toTypedArray()
+        ) { p, grantResults ->
             val deniedList = LinkedList(noGrantedPermissions)
             p.forEachIndexed { index, s ->
                 if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
@@ -101,11 +117,9 @@ class RuntimePermissionsRequest(
             val isGranted = deniedList.isEmpty()
             if (isGranted) {
                 callback.onResult(
-                    RuntimePermissionsResult(
-                        isGranted = true,
-                        grantedList = grantedPermissions,
-                        deniedList = deniedList
-                    )
+                    isGranted = true,
+                    grantedPermissions = grantedPermissions,
+                    deniedPermissions = deniedList
                 )
             } else {
                 onPermissionsDenied(grantedPermissions, deniedList, callback)
@@ -119,52 +133,25 @@ class RuntimePermissionsRequest(
     private fun onPermissionsDenied(
         grantedPermissions: MutableList<String>,
         deniedPermissions: MutableList<String>,
-        callback: PermissionsResultCallback<RuntimePermissionsResult>,
+        callback: RuntimePermissionsResultCallback,
     ) {
         if (onNeverAskAgain != null
             && deniedPermissions.find {
                 !permissionsScope.shouldShowRequestPermissionRationale(it)
             } != null
         ) {
-            val neverAskAgainScope = object : NeverAskAgainScope {
-                override fun forwardToSettings() {
-                    permissionsScope.requestPermissionsBySettings(deniedPermissions) { p, result ->
-                        p.forEachIndexed { index, s ->
-                            if (result[index] == PackageManager.PERMISSION_GRANTED) {
-                                grantedPermissions.add(s)
-                                deniedPermissions.remove(s)
-                            }
-                        }
-                        val isGranted = deniedPermissions.isEmpty()
-                        callback.onResult(
-                            RuntimePermissionsResult(
-                                isGranted = isGranted,
-                                grantedList = grantedPermissions,
-                                deniedList = deniedPermissions
-                            )
-                        )
-                    }
-                }
-
-                override fun cancel() {
-                    callback.onResult(
-                        RuntimePermissionsResult(
-                            isGranted = false,
-                            grantedList = grantedPermissions,
-                            deniedList = deniedPermissions
-                        )
-                    )
-                }
-
-            }
+            val neverAskAgainScope = NeverAskAgainScopeImpl(
+                permissionsScope = permissionsScope,
+                callback = callback,
+                grantedPermissions = grantedPermissions,
+                deniedPermissions = deniedPermissions,
+            )
             onNeverAskAgain!!.onNeverAskAgain(neverAskAgainScope)
         } else {
             callback.onResult(
-                RuntimePermissionsResult(
-                    isGranted = false,
-                    grantedList = grantedPermissions,
-                    deniedList = deniedPermissions
-                )
+                isGranted = false,
+                grantedPermissions = grantedPermissions,
+                deniedPermissions = deniedPermissions
             )
         }
     }

@@ -1,7 +1,7 @@
 package com.github.offile.permissionshelper.runtime
 
-import com.github.offile.permissionshelper.PermissionsScope
-import com.github.offile.permissionshelper.base.PermissionsBuilder
+import com.github.offile.permissionshelper.core.PermissionsBuilder
+import com.github.offile.permissionshelper.core.PermissionsScope
 
 class RuntimePermissionsBuilder(
     permissionsScope: PermissionsScope,
