@@ -1,10 +1,6 @@
 package com.github.offile.permissionshelper.runtime
 
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import com.github.offile.permissionshelper.PermissionsResultCallback
 import com.github.offile.permissionshelper.PermissionsScope
 import com.github.offile.permissionshelper.base.PermissionsRequest

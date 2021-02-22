@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                     .setPositiveButton("ok"){_,_->
                         it.proceed()
                     }.show()
-            }.onNeverAskAgain {
+            }.onNeverAskAgain{
                 AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setTitle("Permission denied")

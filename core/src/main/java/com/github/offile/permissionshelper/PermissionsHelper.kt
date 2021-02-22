@@ -2,7 +2,6 @@ package com.github.offile.permissionshelper
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.github.offile.activityresult.EasyActivityResult
 import com.github.offile.permissionshelper.runtime.RuntimePermissionsBuilder
 
 /**
@@ -23,11 +22,11 @@ class PermissionsHelper {
     private val permissionsScope: PermissionsScope
 
     private constructor(fragmentActivity: FragmentActivity){
-        permissionsScope = PermissionsScope(EasyActivityResult.with(fragmentActivity))
+        permissionsScope = ActivityPermissionsScope(fragmentActivity)
     }
 
     private constructor(fragment: Fragment){
-        permissionsScope = PermissionsScope(EasyActivityResult.with(fragment))
+        permissionsScope = FragmentPermissionsScope(fragment)
     }
 
     /**
