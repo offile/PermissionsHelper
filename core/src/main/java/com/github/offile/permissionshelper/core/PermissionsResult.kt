@@ -1,5 +1,7 @@
 package com.github.offile.permissionshelper.core
 
-interface PermissionsResult {
-    val isGranted: Boolean
-}
+open class PermissionsResult(val isGranted: Boolean)
+
+val permissionGranted = PermissionsResult(true)
+
+val permissionDenied = PermissionsResult(false)

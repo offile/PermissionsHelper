@@ -1,4 +1,4 @@
-package com.github.offile.permissionshelper.ext
+package com.github.offile.permissionshelper
 
 import kotlinx.coroutines.*
 import org.junit.Test

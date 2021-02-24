@@ -1,9 +1,8 @@
 package com.github.offile.permissionshelper.runtime
 
 import android.content.pm.PackageManager
-import com.github.offile.permissionshelper.core.PermissionsResultCallback
-import com.github.offile.permissionshelper.core.PermissionsRequest
-import com.github.offile.permissionshelper.core.PermissionsScope
+import com.github.offile.permissionshelper.core.Request
+import com.github.offile.permissionshelper.core.Source
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.contracts.ExperimentalContracts
@@ -13,12 +12,12 @@ import kotlin.contracts.contract
 /**
  * Implementation of request runtime permission
  */
-class RuntimePermissionsRequest(
-    permissionsScope: PermissionsScope,
+class RuntimeRequest(
+    source: Source,
     private val permissions: LinkedHashSet<String>,
     private var onShowRationale: ShowRationaleFun? = null,
     private var onNeverAskAgain: NeverAskAgainFun? = null,
-) : PermissionsRequest<RuntimePermissionsResult>(permissionsScope) {
+) : Request<RuntimePermissionsResult>(source) {
 
     /**
      * check permissions
@@ -34,7 +33,7 @@ class RuntimePermissionsRequest(
         val grantedList = ArrayList<String>()
         val noGrantedList = ArrayList<String>()
         permissions.forEach {
-            if (permissionsScope.checkPermission(it)) {
+            if (source.checkPermission(it)) {
                 grantedList.add(it)
             } else {
                 noGrantedList.add(it)
@@ -74,7 +73,7 @@ class RuntimePermissionsRequest(
         }
         if (onShowRationale != null) {
             val rationaleList =
-                noGrantedList.filter(permissionsScope::shouldShowRequestPermissionRationale)
+                noGrantedList.filter(source::shouldShowRequestPermissionRationale)
             if (rationaleList.isNotEmpty()) {
                 val showRationaleScope = object : ShowRationaleScope {
                     override val permissions: List<String> get() = rationaleList
@@ -104,7 +103,7 @@ class RuntimePermissionsRequest(
         noGrantedPermissions: MutableList<String>,
         callback: RuntimePermissionsResultCallback,
     ) {
-        permissionsScope.requestPermissions(
+        source.requestPermissions(
             *noGrantedPermissions.toTypedArray()
         ) { p, grantResults ->
             val deniedList = LinkedList(noGrantedPermissions)
@@ -137,11 +136,11 @@ class RuntimePermissionsRequest(
     ) {
         if (onNeverAskAgain != null
             && deniedPermissions.find {
-                !permissionsScope.shouldShowRequestPermissionRationale(it)
+                !source.shouldShowRequestPermissionRationale(it)
             } != null
         ) {
             val neverAskAgainScope = NeverAskAgainScopeImpl(
-                permissionsScope = permissionsScope,
+                source = source,
                 callback = callback,
                 grantedPermissions = grantedPermissions,
                 deniedPermissions = deniedPermissions,
