@@ -1,15 +1,10 @@
-package com.github.offile.permissionshelper.runtime
+package com.github.offile.permissionshelper.core
 
 /**
  * You must call proceed or cancel to continue, otherwise the process will not complete
  * @see ShowRationaleFun
  */
 interface ShowRationaleScope{
-
-    /**
-     * permissions list of permissions that need show rationale
-     */
-    val permissions: List<String>
 
     /**
      * continue the request

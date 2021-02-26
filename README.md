@@ -1,6 +1,6 @@
-Easy Activity Result
-===================
-[![](https://jitpack.io/v/offile/PermissionsHelper.svg)](https://jitpack.io/#offile/PermissionsHelper)
+# Permissions Helper
+
+[![Jitpack](https://jitpack.io/v/offile/PermissionsHelper.svg)](https://jitpack.io/#offile/PermissionsHelper)
 [![Language](https://img.shields.io/badge/compatible-java%20%7C%20kotlin-brightgreen.svg)](https://github.com/offile/PermissionsHelper)
 
 🍎Permission management library for android platform, 
@@ -23,13 +23,25 @@ include the following in your app module build.gradle file:
 
 ```gradle
 dependencies {
-    implementation "com.github.offile:EasyActivityResult:laster-version"
+    implementation "com.github.offile.PermissionsHelper:core:laster-version"
+    // Kotlin coroutine support (optional)
+    implementation “com.github.offile.PermissionsHelper:ktx:laster-version”
 }
 ```
 
 ## Usage
 
-1. Request for runtime permissions.
+### Request for runtime permissions.
+
+* Declare permissions in `AndroidManifest.xml`
+
+```xml
+<manifest>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+</manifest>
+```
+
 ```kotlin
 PermissionsHelper.with(this) // where this is an Activity or Fragment instance
     .runtime()
@@ -61,6 +73,34 @@ PermissionsHelper.with(this) // where this is an Activity or Fragment instance
                 it.cancel()
             }.show()
     }.request{
+        Toast.makeText(this, "this result is ${it.isGranted}", Toast.LENGTH_SHORT).show()
+    }
+```
+
+### Request draw overlay permission
+
+* Declare permissions in `AndroidManifest.xml`
+
+```xml
+<manifest>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+</manifest>
+```
+
+```kotlin
+PermissionsHelper.with(this) // where this is an Activity or Fragment instance
+    .drawOverlay()
+    .request{
+        Toast.makeText(this, "this result is ${it.isGranted}", Toast.LENGTH_SHORT).show()
+    }
+```
+
+### Request notification permission
+
+```kotlin
+PermissionsHelper.with(this) // where this is an Activity or Fragment instance
+    .notify()
+    .request{
         Toast.makeText(this, "this result is ${it.isGranted}", Toast.LENGTH_SHORT).show()
     }
 ```

@@ -15,9 +15,9 @@ import kotlin.contracts.contract
 class RuntimeRequest(
     source: Source,
     private val permissions: LinkedHashSet<String>,
-    private var onShowRationale: ShowRationaleFun? = null,
+    private var onShowRationale: RuntimeShowRationaleFun? = null,
     private var onNeverAskAgain: NeverAskAgainFun? = null,
-) : Request<RuntimePermissionsResult>(source) {
+) : Request<RuntimeResult>(source) {
 
     /**
      * check permissions
@@ -75,7 +75,7 @@ class RuntimeRequest(
             val rationaleList =
                 noGrantedList.filter(source::shouldShowRequestPermissionRationale)
             if (rationaleList.isNotEmpty()) {
-                val showRationaleScope = object : ShowRationaleScope {
+                val showRationaleScope = object : RuntimeShowRationaleScope {
                     override val permissions: List<String> get() = rationaleList
 
                     override fun proceed() = requestFun()

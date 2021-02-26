@@ -3,7 +3,7 @@ package com.github.offile.permissionshelper.core
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-suspend inline fun <Request : com.github.offile.permissionshelper.core.Request<Result>, Result : PermissionsResult> RequestBuilder<Request, Result>.request(): Result {
+suspend inline fun <Request : com.github.offile.permissionshelper.core.Request<Result>, Result : com.github.offile.permissionshelper.core.Result> RequestBuilder<Request, Result>.request(): Result {
     return suspendCancellableCoroutine {
         request { result ->
             it.resume(result)
@@ -11,7 +11,7 @@ suspend inline fun <Request : com.github.offile.permissionshelper.core.Request<R
     }
 }
 
-suspend fun <Result : PermissionsResult> Request<Result>.request(): Result {
+suspend fun <Result : com.github.offile.permissionshelper.core.Result> Request<Result>.request(): Result {
     return suspendCancellableCoroutine {
         request { result ->
             it.resume(result)

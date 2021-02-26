@@ -1,12 +1,18 @@
 package com.github.offile.permissionshelper.notify
 
-import com.github.offile.permissionshelper.core.PermissionsResult
-import com.github.offile.permissionshelper.core.RequestBuilder
-import com.github.offile.permissionshelper.core.Source
+import com.github.offile.permissionshelper.core.*
 
 class NotifyRequestBuilder(source: Source) :
-    RequestBuilder<NotifyRequest, PermissionsResult>(source) {
+    RequestBuilder<NotifyRequest, Result>(source) {
+
+    private var onShowRationale: DefaultShowRationaleFun? = null
+
+    fun onShowRationale(onShowRationale: DefaultShowRationaleFun): NotifyRequestBuilder {
+        this.onShowRationale = onShowRationale
+        return this
+    }
+
     override fun build(): NotifyRequest {
-        return NotifyRequest(source)
+        return NotifyRequest(source, onShowRationale)
     }
 }

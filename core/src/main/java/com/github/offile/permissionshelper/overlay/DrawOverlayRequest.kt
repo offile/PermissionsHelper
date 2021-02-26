@@ -14,32 +14,42 @@ import com.github.offile.permissionshelper.util.PermissionsUtil
  * Check overlay permissions
  * @see Manifest.permission.SYSTEM_ALERT_WINDOW
  */
-class DrawOverlayRequest(source: Source) :
-    Request<PermissionsResult>(source) {
+class DrawOverlayRequest(source: Source, private val onShowRationale: DefaultShowRationaleFun?) :
+    Request<Result>(source) {
 
     private fun canDrawOverlays(): Boolean{
         return PermissionsUtil.canDrawOverlays(source.context)
     }
 
-    override fun request(callback: PermissionsResultCallback<PermissionsResult>) {
+    override fun request(callback: ResultCallback<Result>) {
         if(canDrawOverlays()){
-            callback.onResult(permissionGranted)
-        }else{
+            callback.onResult(DefaultResult.granted)
+        }else if (onShowRationale != null) {
+            onShowRationale.onShowRationale(object : ShowRationaleScope {
+                override fun proceed() {
+                    requestOverlayPermission(callback)
+                }
+
+                override fun cancel() {
+                    callback.onResult(DefaultResult.denied)
+                }
+            })
+        }else {
             requestOverlayPermission(callback)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestOverlayPermission(callback: PermissionsResultCallback<PermissionsResult>) {
+    private fun requestOverlayPermission(callback: ResultCallback<Result>) {
         val intent = Intent(
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
             Uri.parse("package:" + source.packageName),
         )
         source.startActivityForResult(intent){ _, _ ->
             if(canDrawOverlays()){
-                callback.onResult(permissionGranted)
+                callback.onResult(DefaultResult.granted)
             }else{
-                callback.onResult(permissionDenied)
+                callback.onResult(DefaultResult.denied)
             }
         }
     }

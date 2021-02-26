@@ -10,12 +10,14 @@ import androidx.camera.view.CameraView
 import com.github.offile.permissionshelper.PermissionsHelper
 import com.github.offile.permissionshelper.runtime.NeverAskAgainFun
 import com.github.offile.permissionshelper.runtime.NeverAskAgainScope
-import com.github.offile.permissionshelper.runtime.ShowRationaleFun
-import com.github.offile.permissionshelper.runtime.ShowRationaleScope
+import com.github.offile.permissionshelper.core.ShowRationaleFun
+import com.github.offile.permissionshelper.core.ShowRationaleScope
+import com.github.offile.permissionshelper.runtime.RuntimeShowRationaleFun
+import com.github.offile.permissionshelper.runtime.RuntimeShowRationaleScope
 
 
 class RuntimePermissionsActivity : AppCompatActivity(R.layout.activity_runtime_permissions),
-    ShowRationaleFun, NeverAskAgainFun {
+    RuntimeShowRationaleFun, NeverAskAgainFun {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +44,7 @@ class RuntimePermissionsActivity : AppCompatActivity(R.layout.activity_runtime_p
             .bindToLifecycle(this)
     }
 
-    override fun onShowRationale(scope: ShowRationaleScope) {
+    override fun onShowRationale(scope: RuntimeShowRationaleScope) {
         AlertDialog.Builder(this)
             .setCancelable(false)
             .setTitle("Granted permission")

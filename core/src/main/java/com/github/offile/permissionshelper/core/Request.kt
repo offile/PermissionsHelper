@@ -1,7 +1,7 @@
 package com.github.offile.permissionshelper.core
 
-abstract class Request<Result: PermissionsResult>(
+abstract class Request<R: Result>(
     protected val source: Source,
 ) {
-    abstract fun request(callback: PermissionsResultCallback<Result>)
+    abstract fun request(callback: ResultCallback<R>)
 }

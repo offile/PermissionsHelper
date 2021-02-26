@@ -1,11 +1,11 @@
 package com.github.offile.permissionshelper.core
 
-abstract class RequestBuilder<Req : Request<Result>, Result : PermissionsResult>(
+abstract class RequestBuilder<Req : Request<R>, R : Result>(
     protected val source: Source,
 ) {
     abstract fun build(): Req
 
-    fun request(callback: PermissionsResultCallback<Result>){
+    fun request(callback: ResultCallback<R>){
         build().request(callback)
     }
 }

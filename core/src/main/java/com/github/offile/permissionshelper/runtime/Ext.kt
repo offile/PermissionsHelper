@@ -6,7 +6,7 @@ inline fun RuntimePermissionsResultCallback.onResult(
     deniedPermissions: List<String>,
 ){
     onResult(
-        RuntimePermissionsResult(
+        RuntimeResult(
             isGranted = isGranted,
             grantedList = grantedPermissions,
             deniedList = deniedPermissions

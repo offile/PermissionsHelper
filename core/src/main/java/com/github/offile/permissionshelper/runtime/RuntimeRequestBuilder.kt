@@ -5,10 +5,10 @@ import com.github.offile.permissionshelper.core.Source
 
 class RuntimeRequestBuilder(
     source: Source,
-) : RequestBuilder<RuntimeRequest, RuntimePermissionsResult>(source) {
+) : RequestBuilder<RuntimeRequest, RuntimeResult>(source){
 
     private val permissions: LinkedHashSet<String>  = LinkedHashSet()
-    private var onShowRationale: ShowRationaleFun? = null
+    private var onShowRationale: RuntimeShowRationaleFun? = null
     private var onNeverAskAgain: NeverAskAgainFun? = null
 
     fun permissions(vararg permission: String): RuntimeRequestBuilder {
@@ -16,7 +16,7 @@ class RuntimeRequestBuilder(
         return this
     }
 
-    fun onShowRationale(onShowRationale: ShowRationaleFun): RuntimeRequestBuilder{
+    fun onShowRationale(onShowRationale: RuntimeShowRationaleFun): RuntimeRequestBuilder{
         this.onShowRationale = onShowRationale
         return this
     }
