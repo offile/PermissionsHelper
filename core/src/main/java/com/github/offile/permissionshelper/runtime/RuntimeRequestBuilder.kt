@@ -1,11 +1,13 @@
 package com.github.offile.permissionshelper.runtime
 
+import com.github.offile.permissionshelper.core.NeverAskAgainFun
+import com.github.offile.permissionshelper.core.Request
 import com.github.offile.permissionshelper.core.RequestBuilder
 import com.github.offile.permissionshelper.core.Source
 
 class RuntimeRequestBuilder(
     source: Source,
-) : RequestBuilder<RuntimeRequest, RuntimeResult>(source){
+) : RequestBuilder<Request<RuntimeResult>, RuntimeResult>(source){
 
     private val permissions: LinkedHashSet<String>  = LinkedHashSet()
     private var onShowRationale: RuntimeShowRationaleFun? = null
@@ -13,6 +15,11 @@ class RuntimeRequestBuilder(
 
     fun permissions(vararg permission: String): RuntimeRequestBuilder {
         permissions.addAll(permission)
+        return this
+    }
+
+    fun permissions(permissions: Collection<String>): RuntimeRequestBuilder {
+        this.permissions.addAll(permissions)
         return this
     }
 
@@ -26,7 +33,7 @@ class RuntimeRequestBuilder(
         return this
     }
 
-    override fun build(): RuntimeRequest {
+    override fun build(): Request<RuntimeResult> {
         return RuntimeRequest(
             source = source,
             permissions = permissions,

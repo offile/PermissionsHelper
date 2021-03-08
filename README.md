@@ -6,6 +6,13 @@
 🍎Permission management library for android platform, 
 One line of code completes permission request
 
+## feature
+
+- Request runtime permissions
+- Request to draw at the top of other apps.
+  'android.permission.SYSTEM_ALERT_WINDOW'
+- Request to show notifications.
+
 ## Setup
 
 Add it in your root build.gradle at the end of repositories:
@@ -25,7 +32,7 @@ include the following in your app module build.gradle file:
 dependencies {
     implementation "com.github.offile.PermissionsHelper:core:laster-version"
     // Kotlin coroutine support (optional)
-    implementation “com.github.offile.PermissionsHelper:ktx:laster-version”
+    implementation "com.github.offile.PermissionsHelper:ktx:laster-version"
 }
 ```
 
@@ -100,6 +107,16 @@ PermissionsHelper.with(this) // where this is an Activity or Fragment instance
 ```kotlin
 PermissionsHelper.with(this) // where this is an Activity or Fragment instance
     .notify()
+    .request{
+        Toast.makeText(this, "this result is ${it.isGranted}", Toast.LENGTH_SHORT).show()
+    }
+```
+
+### Request VPN permission
+
+```kotlin
+PermissionsHelper.with(this) // where this is an Activity or Fragment instance
+    .vpn()
     .request{
         Toast.makeText(this, "this result is ${it.isGranted}", Toast.LENGTH_SHORT).show()
     }

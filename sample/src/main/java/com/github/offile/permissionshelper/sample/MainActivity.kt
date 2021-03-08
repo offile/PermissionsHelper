@@ -9,11 +9,13 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.PermissionChecker
 import com.github.offile.permissionshelper.PermissionsHelper
+import com.github.offile.permissionshelper.runtime.RuntimeShowRationaleScope
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 

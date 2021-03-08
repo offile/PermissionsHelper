@@ -1,6 +1,7 @@
 package com.github.offile.permissionshelper.runtime
 
 import android.content.pm.PackageManager
+import com.github.offile.permissionshelper.core.NeverAskAgainFun
 import com.github.offile.permissionshelper.core.Request
 import com.github.offile.permissionshelper.core.Source
 import java.util.*
@@ -18,6 +19,18 @@ class RuntimeRequest(
     private var onShowRationale: RuntimeShowRationaleFun? = null,
     private var onNeverAskAgain: NeverAskAgainFun? = null,
 ) : Request<RuntimeResult>(source) {
+
+    override fun request(callback: RuntimePermissionsResultCallback) {
+        checkPermissions(permissions) { isGranted, grantedList, noGrantedList ->
+            if (isGranted) {
+                // All permissions are granted
+                callback.onResult(true, grantedList, emptyList())
+            } else {
+                // there are still permissions not granted
+                requestBeforeRationale(grantedList, noGrantedList, callback)
+            }
+        }
+    }
 
     /**
      * check permissions
@@ -43,29 +56,17 @@ class RuntimeRequest(
         callback(isGranted, grantedList, noGrantedList)
     }
 
-    override fun request(callback: RuntimePermissionsResultCallback) {
-        checkPermissions(permissions) { isGranted, grantedList, noGrantedList ->
-            if (isGranted) {
-                // All permissions are granted
-                callback.onResult(true, grantedList, emptyList())
-            } else {
-                // there are still permissions not granted
-                requestAndCheckRationale(grantedList, noGrantedList, callback)
-            }
-        }
-    }
-
     /**
      * Check if you want to explain before requesting permission
      */
-    private fun requestAndCheckRationale(
+    private fun requestBeforeRationale(
         grantedList: MutableList<String>,
         noGrantedList: MutableList<String>,
         callback: RuntimePermissionsResultCallback
     ) {
         // create request
         val requestFun = {
-            requestNoGrantedPermissions(
+            requestPermissions(
                 grantedPermissions = grantedList,
                 noGrantedPermissions = noGrantedList,
                 callback = callback
@@ -75,16 +76,10 @@ class RuntimeRequest(
             val rationaleList =
                 noGrantedList.filter(source::shouldShowRequestPermissionRationale)
             if (rationaleList.isNotEmpty()) {
-                val showRationaleScope = object : RuntimeShowRationaleScope {
-                    override val permissions: List<String> get() = rationaleList
-
+                val showRationaleScope = object : RuntimeShowRationaleScope(source.context, rationaleList) {
                     override fun proceed() = requestFun()
 
-                    override fun cancel() = callback.onResult(
-                        isGranted = false,
-                        grantedPermissions = grantedList,
-                        deniedPermissions = noGrantedList,
-                    )
+                    override fun cancel() = callback.onResult(false, grantedList, noGrantedList,)
                 }
                 onShowRationale!!.onShowRationale(showRationaleScope)
             } else {
@@ -98,14 +93,12 @@ class RuntimeRequest(
     /**
      * Only request permissions that have not been granted
      */
-    private fun requestNoGrantedPermissions(
+    private fun requestPermissions(
         grantedPermissions: MutableList<String>,
         noGrantedPermissions: MutableList<String>,
         callback: RuntimePermissionsResultCallback,
     ) {
-        source.requestPermissions(
-            *noGrantedPermissions.toTypedArray()
-        ) { p, grantResults ->
+        source.requestPermissions(*noGrantedPermissions.toTypedArray()) { p, grantResults ->
             val deniedList = LinkedList(noGrantedPermissions)
             p.forEachIndexed { index, s ->
                 if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
@@ -139,7 +132,7 @@ class RuntimeRequest(
                 !source.shouldShowRequestPermissionRationale(it)
             } != null
         ) {
-            val neverAskAgainScope = NeverAskAgainScopeImpl(
+            val neverAskAgainScope = RuntimeNeverAskAgainScope(
                 source = source,
                 callback = callback,
                 grantedPermissions = grantedPermissions,

@@ -25,7 +25,7 @@ class DrawOverlayRequest(source: Source, private val onShowRationale: DefaultSho
         if(canDrawOverlays()){
             callback.onResult(DefaultResult.granted)
         }else if (onShowRationale != null) {
-            onShowRationale.onShowRationale(object : ShowRationaleScope {
+            onShowRationale.onShowRationale(object : ShowRationaleScope(source.context) {
                 override fun proceed() {
                     requestOverlayPermission(callback)
                 }

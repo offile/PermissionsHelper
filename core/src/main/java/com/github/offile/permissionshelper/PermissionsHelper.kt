@@ -8,6 +8,7 @@ import com.github.offile.permissionshelper.core.Source
 import com.github.offile.permissionshelper.notify.NotifyRequestBuilder
 import com.github.offile.permissionshelper.overlay.DrawOverlayBuilder
 import com.github.offile.permissionshelper.runtime.RuntimeRequestBuilder
+import com.github.offile.permissionshelper.vpn.VpnBuilder
 
 /**
  * Used to handle various permissions for Android
@@ -15,22 +16,23 @@ import com.github.offile.permissionshelper.runtime.RuntimeRequestBuilder
 class PermissionsHelper {
     companion object {
         @JvmStatic
-        fun with(fragmentActivity: FragmentActivity): PermissionsHelper{
+        fun with(fragmentActivity: FragmentActivity): PermissionsHelper {
             return PermissionsHelper(fragmentActivity)
         }
+
         @JvmStatic
-        fun with(fragment: Fragment): PermissionsHelper{
+        fun with(fragment: Fragment): PermissionsHelper {
             return PermissionsHelper(fragment)
         }
     }
 
     private val source: Source
 
-    private constructor(fragmentActivity: FragmentActivity){
+    private constructor(fragmentActivity: FragmentActivity) {
         source = ActivitySource(fragmentActivity)
     }
 
-    private constructor(fragment: Fragment){
+    private constructor(fragment: Fragment) {
         source = FragmentSource(fragment)
     }
 
@@ -53,5 +55,12 @@ class PermissionsHelper {
      */
     fun notify(): NotifyRequestBuilder {
         return NotifyRequestBuilder(source)
+    }
+
+    /**
+     * build vpn permission request
+     */
+    fun vpn(): VpnBuilder {
+        return VpnBuilder(source)
     }
 }

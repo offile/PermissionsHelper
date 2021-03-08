@@ -1,5 +1,6 @@
 package com.github.offile.permissionshelper.runtime
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun RuntimePermissionsResultCallback.onResult(
     isGranted: Boolean,
     grantedPermissions: List<String>,

@@ -12,14 +12,14 @@ class NotifyRequest(source: Source, private val onShowRationale: DefaultShowRati
         if(PermissionsUtil.areNotificationsEnabled(source.context)){
             callback.onResult(Result(true))
         }else if(onShowRationale != null){
-            onShowRationale.onShowRationale(object : ShowRationaleScope {
+            onShowRationale.onShowRationale(object : ShowRationaleScope(source.context) {
 
                 override fun proceed() {
                     requestNotify(callback)
                 }
 
                 override fun cancel() {
-                    callback.onResult(Result(false))
+                    callback.onResult(DefaultResult.denied)
                 }
 
             })
